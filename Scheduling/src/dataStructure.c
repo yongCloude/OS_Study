@@ -138,10 +138,53 @@ int init_heap(heap *hp, Parser *parser){
     return TRUE;
 }
 
+unsigned long long init_heap_for_guaranteed(heap *hp, Parser *parser){
+    FILE *fp = open_file(parser -> trace_file_path);
+    
+    // file path check is completed so there is no exception check
+    if(fp == NULL){
+        PRINT_ERROR("file open failed\n");
+        return FALSE;
+    }
+    unsigned long long size;
+    fscanf(fp, "%lld", &size);
+    hp -> process = malloc(sizeof(Proc) * size);
+    hp -> index = 0;
+    
+    close_file(fp);
+    
+    return size;
+}
+
 void push(heap *hp, Proc process){
     
     Index curIndex = hp -> index;
     Index parent = getParent(curIndex);
+    
+    *((hp->process) + curIndex) = process;
+    while(curIndex > 0 && ((hp->process) + curIndex) -> required_time < ((hp -> process) + parent) -> required_time){
+        swap(hp, curIndex, parent);
+        curIndex = parent;
+        parent = getParent(parent);
+    }
+    hp -> index++;
+}
+
+void push_for_guaranteed(heap *hp, Proc process, unsigned long long heap_size){
+    Index curIndex = hp -> index;
+    Index parent = getParent(curIndex);
+    
+    heap *new_hp = malloc(sizeof(heap));
+    new_hp -> process = malloc(sizeof(heap_size));
+    new_hp -> index = 0;
+    
+    while(hp->index >= 0){
+        Proc refresh_node;
+        refresh_node = pop(hp);
+        double ratio = (double)(refresh_node.process_time) / (get_current_time() - refresh_node.create_time);
+    }
+    
+    
     
     *((hp->process) + curIndex) = process;
     while(curIndex > 0 && ((hp->process) + curIndex) -> required_time < ((hp -> process) + parent) -> required_time){

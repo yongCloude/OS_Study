@@ -53,7 +53,9 @@ Proc Dequeue(queue *que);
 
 // Heap //
 int init_heap(heap *hp, Parser *parser);
+unsigned long long init_heap_for_guaranteed(heap *hp, Parser *parser);
 void push(heap *hp, Proc process);
+void push_for_guaranteed(heap *hp, Proc process, unsigned long long heap_size);
 Proc pop(heap *hp);
 
 Index getParent(Index curIndex);

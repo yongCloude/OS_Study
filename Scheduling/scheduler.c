@@ -5,7 +5,7 @@
 #include "src/host.h"
 #include "src/cpu.h"
 #include "src/parser.h"
-#include "dataStructure.h"
+#include "src/dataStructure.h"
 
 /* g_cpu : cpu 전역 변수, g_host : host 전역 변수
 //실제 사용할 때는 직접 접근하지 마세요 (혹시나 간단하게 디버깅 할 때 관련 변수 쓸까봐 놔둠) 
@@ -44,7 +44,10 @@ typedef struct MLFQ {
 } MLFQ;
 
 typedef struct GUARANTEE {
-
+    heap buf;
+    unsigned long long heap_size;
+    double ratio;
+    TIME used_time;
 } GUARANTEE;
 
 
@@ -77,7 +80,11 @@ void init_MLFQ(MLFQ** sch_mlfq, Parser* parser) {
 
 }
 void init_GUARANTEE(GUARANTEE** sch_guarantee, Parser* parser) {
-
+    GUARANTEE *sch = *sch_guarantee;
+    sch->heap_size = init_heap_for_guaranteed(&(sch->buf), parser);
+    
+    sch->ratio = 0.0;
+    sch->used_time = 0;
 }
 
 
@@ -103,7 +110,7 @@ void simulate_FIFO(Proc* next_process, FIFO* sch_fifo) {
     }
     
     if(run_cpu()){
-        
+        terminate_process(unschedule_cpu());
     }
 }
 

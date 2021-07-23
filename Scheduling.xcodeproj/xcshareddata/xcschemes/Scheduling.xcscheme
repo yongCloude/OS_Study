@@ -57,7 +57,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "RR"
+            argument = "FIFO"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
